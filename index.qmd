@@ -17,6 +17,7 @@ format:
     footer: "Attendance Analysis"
 execute: 
   echo: true
+  engine: knitr
 ---
 
 ## Project Overview:
@@ -126,9 +127,7 @@ Example of an entropy output for one school broken down by specific attendance c
 
 :::
 :::{.column width=54%}
-::::: {style="color: #000; background-color: #fff; padding: 10px; border: solid; border-color: #000; text-align: left;"}
 ![](images/m1_school_entropy_void.png)
-:::::
 :::
 ::::
 
@@ -150,6 +149,7 @@ Example of an entropy output for one school broken down by specific attendance c
 :::{.column width=51%}
 
 The adjusted model flagged schools for further analysis after ofsted visits, and raised significantly less false positives. Benefits:
+
 - Less computationally expensive
 - More interpretable results
 - Relevant to the current policy climate (this was during the time when Ofsted visits were being reformed)
@@ -166,8 +166,12 @@ The adjusted model flagged schools for further analysis after ofsted visits, and
 - Don't let efforts go to waste! 
   - The initial work was used as further evidence for investment in a neural network to predict pupil attendance codes. We currently have a contractor working on this and after 3-months the neural network has >80% accuracy!
   
+<br>
+  
 - Noting users' requirements early is crucial, it made presenting a new methodology possible. 
   - Similarly, identifying a minimally viable product is important in case of future road blocks.
+  
+<br>
 
 - It's okay for projects to pivot as long as the reasons are communicated early and effectively. Always come prepared with potential solutions!
 

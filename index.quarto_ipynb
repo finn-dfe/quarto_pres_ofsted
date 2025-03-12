@@ -39,8 +39,11 @@
         "- Description of the data model and its features such as retrospective data updates.\n",
         "\n",
         "### Tools used:\n",
-        "- Databricks\n",
+        "\n",
+        "- Databricks for data cleaning and data analysis\n",
+        "  - Allows the use of SQL and R scripts seamlessly in the same pipeline, as well as using Spark which optimises queries and distributes compute, efficiently processing the large dataset.\n",
         "- Git for version control, repository hosted on Azure DevOps\n",
+        "  - Version control, particularly the use of branches in Git, allows for development and testing while keeping the main project safe. I used `git merge` when combining branches to retain the commit history of development branches.\n",
         "\n",
         "## Starting off\n",
         "\n",
@@ -190,7 +193,7 @@
         "Slides built from the DfE analytical services' [Quarto template](https://github.com/dfe-analytical-services/quarto-slides-template)\n",
         ":::"
       ],
-      "id": "1ce977a4"
+      "id": "868ba53b"
     }
   ],
   "metadata": {
