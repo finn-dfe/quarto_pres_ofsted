@@ -1,12 +1,12 @@
 ---
-title: Quarto Template
-subtitle: DfE Analytical Services
+title: Detecting abnormal attendance patterns from daily data
+subtitle: A technical presentation - 14th March 2025
 title-slide-attributes:
   data-background-position: top
   data-background-image: images/sanctuary-buildings.jpg
   data-background-size: cover
   data-background-opacity: "0.1"
-author: "A. Analyst"
+author: "Finn Trinci"
 institute: Department for Education
 format:
   revealjs:
@@ -14,165 +14,163 @@ format:
     width: 120%
     height: 120%
     logo: images/DfE_logo_landscape.svg
-    footer: "DfE Quarto Template"
+    footer: "Attendance Analysis"
 execute: 
   echo: true
 ---
 
-## Introduction
+## Project Overview:
 
-::: {.fragment}
-- This is the opening slide with some sort of intro
-:::
+**Policy customers**: school accountability.
 
-::: {.fragment}
-- And a second bullet point that appears on a separate click
-:::
+- Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day. 
 
-::: {.fragment}
-- And a third bullet point that appears after the second
-:::
+**Data experts**: daily attendance data modelers.
 
-## Using sub-headings
+- Description of the data model and its features such as retrospective data updates.
 
-### This is a subheading on a page
+### Tools used:
+- Databricks
+- Git for version control, repository hosted on Azure DevOps
 
-- Here's bullet point #1
-- And bullet point #2
+## Starting off
 
-### Then the next subheading
-
-Here's some more text not in bullet points
+- Understanding the daily attendance data model
+- **Exploratory data analysis** 
+  - Small number of schools with all pupil characteristics unknown e.g. SEN.
+- Data cleaning - large dataset so investigative
 
 
-## Creating layouts with columns
+There were duplicate entries for the same pupils. Discussions with data modellers revealed that some schools created new learner IDs when a pupil changed year groups, so we took the most recent learner ID.
 
-The below is arranged into columns:
+``` {sql, eval=FALSE}
+create or replace temporary view df_year_groups_deduped as
+select a.*
+from (
+  select *, row_number() over (partition by source_learner_id order by admission_date_sk desc) as rn
+  from df_year_groups
+) as a
+where a.rn = 1;
+```
+
+- Issues were communicated with the policy team so they could understand the data limitations early.
+
+## Methodology: Entropy Analysis
+
+Entropy measures the likelihood of certain attendance codes occurring on a given day, with **less likely** codes having **higher entropy**. 
+
+<br>
+
+Calculated as Shannon's entropy:
+
+\begin{gather*}
+H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
+\end{gather*}
+
+Total entropy in school $j$ for session $t$ is equal to the sum for all **$n$ pupils** of the pupil's probability of having attendance code $x_{i,j,t}$ times by the log of that probability. 
+
+How do we calculate the probability of each code?
+
+- Code probabilities are modeled as a **Dirichlet distributed** random variable such that probabilities sum to 1 on any given session.
+
+- Probabilities are estimated using **Bayesian updating** on a **pupil level**, so a pupil's most common code has the highest probability. 
+  - The most recent attendance code has the highest weight because codes are persistent across sessions.
+  - A pupil's attendance in the previous academic year provides the baseline probability
+
+## Methodology: Entropy Analysis
 
 :::: {.columns}
-::: {.column width="48%"}
-A column taking up about half the screen
+::: {.column width="69%"}
+Drawbacks of this methodology:
+
+  - Processing load: Intensive as we re-calculate a pupil's code probability each session -- with ~9 million pupils that's 18 million sessions per day!
+    - Originally calculated probabilities using an R package `rdirchlet` but this calculation was done manually in spark SQL to allow for **efficient querying** using spark's distributed processing. 
+    
+    <br>
+    
+    - Created a function to run the model for specific schools rather than all schools, so we could test our outputs (shown on next slide). This meant we had a minimally viable product to show stakeholders the outputs, and explain the drawbacks. 
+    
 :::
-::: {.column width="24%"}
-And one about a quarter
-:::
-::: {.column width="24%"}
-And the last quarter
+::: {.column width=30%}
+<br>
+<br>
+![](images/white_spark-removebg.png)
+``` {.r code-line-numbers="1-5"}
+plot_school_entropy(
+  URN = "XXXXXXX",
+  time_from = as.Date("2024-09-01"),
+  time_to = as.Date("2024-11-24"),
+  code_breakdown = TRUE)
+```
+
 :::
 ::::
 
-And here's some text back in single column layout
 
-## Including an image
 
-We can use the column layout to include a picture alongside our text.
-
-:::: {.columns}
-::: {.column width="72%"}
-Here's a text area
-:::
-::: {.column width=27%}
-![](images/DfE_logo_landscape.svg)
-:::
-::::
-
-## Adding some shading to columns
+## Entropy Methodology
 
 ::::{.columns}
 :::{.column width=42%}
-The column area to the right contains some css styling to give it a different background and a border.
+Example of an entropy output for one school broken down by specific attendance codes.
+
+<br>
+
+- Outputs need domain knowledge to be interpretable.
+- Creates a significant number of false positives.
+- The majority of entropy is coming from the most common attendance code, uninformative. 
+- Assigned probabilities are crude, need a more sophisticated methodology like a neural network to more accurately predict attendance codes.
+
 :::
 :::{.column width=54%}
 ::::: {style="color: #000; background-color: #fff; padding: 10px; border: solid; border-color: #000; text-align: left;"}
-Number of rapid lateral flow and PCR tests conducted in care home staff and residents, weekly, England, October 2021 to March 2022
-![](images/Demo-1-chart-opt-2.svg)
+![](images/m1_school_entropy_void.png)
 :::::
 :::
 ::::
 
-## Adding in code snippets
+## New Methodology: 
 
-Here we have a code snippet that's not run.
-```{r}
-# Description: The aggregate_geography() function takes an input data frame 
-# containing local authority level data and appends aggregates of any value 
-# fields to the data frame. The input must contain the field old_la_code.
-aggregate_geography <- function(data){
-  data %>%
-    left_join(geography_lookup) %>%
-    ...
-}
-```
+- Presented the limitations of the entropy model and explained the additional resource requirement to get more reliable results with less false positives.
 
-And here's a code snippet that is run.
-```{r eval=TRUE}
-# two_plus_two is the function to test
-two_plus_two <- function(){2+2}
+<br> 
 
-# The test checks that 2+2 is not 5
-testthat::test_that("Two plus two is not five", {
-  testthat::expect_false(two_plus_two() == 5)
-})
-```
+- Proposed an **alternative methodology** based on their initial requirements.
+  - Looks at attendnace on **specific days** instead of every day for every school.
+  - This means in their Ofsted example, we can look at attendance on the Ofsted inspection date.
+  - The model is simplified to look at attendance and absence of specific pupil groups.
+  
+  
+## Results of the adjusted methodology:
 
-## Line Highlighting
+::::{.columns}
+:::{.column width=51%}
 
--   Highlight specific lines for emphasis
--   Incrementally highlight additional lines
+The adjusted model flagged schools for further analysis after ofsted visits, and raised significantly less false positives. Benefits:
+- Less computationally expensive
+- More interpretable results
+- Relevant to the current policy climate (this was during the time when Ofsted visits were being reformed)
+- Code was flexible and reproducible so could be applied in other contexts e.g. looking at attendance on census days.
 
-``` {.r code-line-numbers="3-4|6|7"}
-library(dplyr)
-
-data <- starwars |>
-  group_by(species) |>
-  summarise(height = mean(height, na.rm = TRUE)) |>
-  slice_max(order_by = height, n = 5) |>
-  mutate(species = factor(species, levels = species[order(height)]))
-```
-
-## Some more column styling options
-
-:::: {.columns}
-::::: {style="background-color: #2073BC; padding: 10px; border: solid; border-color: #12436D"}
-
-::: {.column width="24%"}
-![](images/DfE_logo_landscape.svg){width=10em}
 :::
-::: {.column width="24%"}
-Box 1
+:::{.column width=48%}
+![](images/m2_school_ofsted_dip.jpg)
 :::
-
-::: {.column width="24%"}
-![](images/DfE_logo_landscape.svg){width=10em}
-:::
-::: {.column width="24%"}
-Box 2
-:::
-
-:::::
 ::::
 
-:::: {.columns}
-::::: {style="background-color: #2073BC; padding: 10px; border: solid; border-color: #12436D"}
-::: {.column width="24%"}
-![](images/DfE_logo_landscape.svg){width=10em}
-:::
-::: {.column width="24%"}
-Box 3
-:::
+## Lessons learned
 
+- Don't let efforts go to waste! 
+  - The initial work was used as further evidence for investment in a neural network to predict pupil attendance codes. We currently have a contractor working on this and after 3-months the neural network has >80% accuracy!
+  
+- Noting users' requirements early is crucial, it made presenting a new methodology possible. 
+  - Similarly, identifying a minimally viable product is important in case of future road blocks.
 
-::: {.column width="24%"}
-![](images/DfE_logo_landscape.svg){width=10em}
-:::
-::: {.column width="24%"}
-Box 4
-:::
-:::::
-::::
+- It's okay for projects to pivot as long as the reasons are communicated early and effectively. Always come prepared with potential solutions!
+
 
 ::: center-content
 ## Any questions?
 
-Slides built from our [Quarto template](https://github.com/dfe-analytical-services/quarto-slides-template)
+Slides built from the DfE analytical services' [Quarto template](https://github.com/dfe-analytical-services/quarto-slides-template)
 :::
