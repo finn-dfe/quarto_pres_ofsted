@@ -30,8 +30,11 @@ execute:
 - Description of the data model and its features such as retrospective data updates.
 
 ### Tools used:
-- Databricks
+
+- Databricks for data cleaning and data analysis
+  - Allows the use of SQL and R scripts seamlessly in the same pipeline, as well as using Spark which optimises queries and distributes compute, efficiently processing the large dataset.
 - Git for version control, repository hosted on Azure DevOps
+  - Version control, particularly the use of branches in Git, allows for development and testing while keeping the main project safe. I used `git merge` when combining branches to retain the commit history of development branches.
 
 ## Starting off
 
