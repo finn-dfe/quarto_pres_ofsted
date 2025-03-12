@@ -209,11 +209,11 @@ Finn Trinci
 </section>
 <section id="project-overview" class="slide level2">
 <h2>Project Overview:</h2>
-<p><strong>Policy customers</strong>: school accountability.</p>
+<p><strong>Policy customers</strong> - school accountability.</p>
 <ul>
 <li>Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day.</li>
 </ul>
-<p><strong>Data experts</strong>: daily attendance data modelers.</p>
+<p><strong>Data experts</strong> - daily attendance data modelers.</p>
 <ul>
 <li>Description of the data model and its features such as retrospective data updates.</li>
 </ul>
@@ -280,7 +280,7 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 <ul>
 <li><p>Processing load: Intensive as we re-calculate a pupil’s code probability each session – with ~9 million pupils that’s 18 million sessions per day!</p>
 <ul>
-<li>Originally calculated probabilities using an R package <code>rdirchlet</code> but this calculation was done manually in spark SQL to allow for <strong>efficient querying</strong> using spark’s distributed processing.</li>
+<li>Originally calculated probabilities using the <code>rdirichlet()</code> function from the <code>MCMCpack</code> library but later changed to caculating in spark SQL to allow for <strong>efficient querying</strong> using spark’s distributed processing.</li>
 </ul>
 <p><br></p>
 <ul>
