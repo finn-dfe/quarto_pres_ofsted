@@ -22,11 +22,11 @@ execute:
 
 ## Project Overview:
 
-**Policy customers**: school accountability.
+**Policy customers** - school accountability.
 
 - Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day. 
 
-**Data experts**: daily attendance data modelers.
+**Data experts** - daily attendance data modelers.
 
 - Description of the data model and its features such as retrospective data updates.
 
@@ -88,7 +88,7 @@ How do we calculate the probability of each code?
 Drawbacks of this methodology:
 
   - Processing load: Intensive as we re-calculate a pupil's code probability each session -- with ~9 million pupils that's 18 million sessions per day!
-    - Originally calculated probabilities using an R package `rdirchlet` but this calculation was done manually in spark SQL to allow for **efficient querying** using spark's distributed processing. 
+    - Originally calculated probabilities using the `rdirichlet()` function from the `MCMCpack` library but later changed to caculating in spark SQL to allow for **efficient querying** using spark's distributed processing. 
     
     <br>
     
