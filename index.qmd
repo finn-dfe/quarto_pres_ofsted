@@ -41,11 +41,17 @@ execute:
 
 - Understanding the daily attendance data model
 - **Exploratory data analysis** 
-  - Small number of schools with all pupil characteristics unknown e.g. SEN.
+  - Small number of schools with all pupil characteristics unknown e.g. special educational needs (SEN).
 - Data cleaning - large dataset so investigative
 
 
-There were duplicate entries for the same pupils. Discussions with data modellers revealed that some schools created new learner IDs when a pupil changed year groups, so we took the most recent learner ID.
+  - There were duplicate entries for the same pupils. Discussions with data modellers revealed that some schools created new learner IDs when a pupil changed year groups, so we took the most recent learner ID.
+
+:::: {.columns}
+::: {.column width="7%"}
+ 
+:::
+::: {.column width=92%}
 
 ``` {sql, eval=FALSE}
 create or replace temporary view df_year_groups_deduped as
@@ -57,9 +63,14 @@ from (
 where a.rn = 1;
 ```
 
+:::
+::::
+
+<br>
+
 - Issues were communicated with the policy team so they could understand the data limitations early.
 
-## Methodology: Entropy Analysis
+## Methodology: Entropy analysis
 
 Entropy measures the likelihood of certain attendance codes occurring on a given day, with **less likely** codes having **higher entropy**. 
 
@@ -68,12 +79,12 @@ Entropy measures the likelihood of certain attendance codes occurring on a given
 Calculated as Shannon's entropy:
 
 \begin{gather*}
-H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
+H(X_{j,t}) = -\sum_{i = 0}^Np(x_{k, j, t})\log_2p(x_{k, j, t})
 \end{gather*}
 
-Total entropy in school $j$ for session $t$ is equal to the sum for all **$n$ pupils** of the pupil's probability of having attendance code $x_{i,j,t}$ times by the log of that probability. 
+Total entropy in school $j$ for session $t$ is equal to the sum for all **$N$ pupils** of the pupil's probability of having attendance code $x_{k,j,t}$ times by the log of that probability. 
 
-How do we calculate the probability of each code?
+#### How do we calculate the probability of each code?
 
 - Code probabilities are modeled as a **Dirichlet distributed** random variable such that probabilities sum to 1 on any given session.
 
@@ -81,7 +92,7 @@ How do we calculate the probability of each code?
   - The most recent attendance code has the highest weight because codes are persistent across sessions.
   - A pupil's attendance in the previous academic year provides the baseline probability
 
-## Methodology: Entropy Analysis
+## Methodology: Entropy analysis
 
 :::: {.columns}
 ::: {.column width="69%"}
@@ -112,7 +123,7 @@ plot_school_entropy(
 
 
 
-## Entropy Methodology
+## Methodology: Entropy analysis
 
 ::::{.columns}
 :::{.column width=42%}
@@ -131,16 +142,22 @@ Example of an entropy output for one school broken down by specific attendance c
 :::
 ::::
 
-## New Methodology: 
+## New Methodology! 
 
-- Presented the limitations of the entropy model and explained the additional resource requirement to get more reliable results with less false positives.
+- I presented the limitations of the entropy model and explained the resource requirement for a neural network as well as why it generates more reliable results (with less false positives).
 
 <br> 
 
-- Proposed an **alternative methodology** based on their initial requirements.
-  - Looks at attendnace on **specific days** instead of every day for every school.
-  - This means in their Ofsted example, we can look at attendance on the Ofsted inspection date.
-  - The model is simplified to look at attendance and absence of specific pupil groups.
+- I proposed an **alternative methodology** based on their initial requirements.
+
+<br>
+
+#### Detecting suspicious activity on specific days
+
+- Looks at attendance on **specific days** for each school instead of every day for every school.
+- In line with the initial project requirements, we can look at attendance on the Ofsted inspection date.
+- The model is simplified to look at attendance and absence of specific pupil groups.
+  - But... it's less flexible, it is an event study framework so looks at one output at a time. In the Ofsted example, we look at the attendance of previously excluded pupils and pupils with SEN.
   
   
 ## Results of the adjusted methodology:
@@ -154,10 +171,11 @@ The adjusted model flagged schools for further analysis after ofsted visits, and
 - More interpretable results
 - Relevant to the current policy climate (this was during the time when Ofsted visits were being reformed)
 - Code was flexible and reproducible so could be applied in other contexts e.g. looking at attendance on census days.
+  - Created detailed documentation to ensure future analysts could apply the pipeline with updated data, or to look at different dates.
 
 :::
 :::{.column width=48%}
-![](images/m2_school_ofsted_dip.jpg)
+![](images/m2_school_ofsted_dip.jpg){style="margin-bottom: 15px;"}
 :::
 ::::
 
@@ -169,7 +187,7 @@ The adjusted model flagged schools for further analysis after ofsted visits, and
 <br>
   
 - Noting users' requirements early is crucial, it made presenting a new methodology possible. 
-  - Similarly, identifying a minimally viable product is important in case of future road blocks.
+  - Similarly, identifying a minimally viable product is important in case of project road blocks.
   
 <br>
 
