@@ -20,15 +20,15 @@ execute:
   engine: knitr
 ---
 
-## Project Overview:
-
-**Policy customers** - school accountability.
-
-- Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day. 
+## Project Initiation:
 
 **Data experts** - daily attendance data modelers.
 
 - Description of the data model and its features such as retrospective data updates.
+
+**Policy customers** - school accountability.
+
+- Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day. 
 
 ### Tools used:
 
@@ -79,10 +79,11 @@ Entropy measures the likelihood of certain attendance codes occurring on a given
 Calculated as Shannon's entropy:
 
 \begin{gather*}
-H(X_{j,t}) = -\sum_{i = 0}^Np(x_{k, j, t})\log_2p(x_{k, j, t})
+H(X_{j,t}) = -\sum_{i = 1}^Np(x_{i, j, t})\log_2p(x_{i, j, t})
 \end{gather*}
 
 Total entropy in school $j$ for session $t$ is equal to the sum for all **$N$ pupils** of the pupil's probability of having attendance code $x_{k,j,t}$ times by the log of that probability. 
+<br>
 
 #### How do we calculate the probability of each code?
 
@@ -144,7 +145,7 @@ Example of an entropy output for one school broken down by specific attendance c
 
 ## New Methodology! 
 
-- I presented the limitations of the entropy model and explained the resource requirement for a neural network as well as why it generates more reliable results (with less false positives).
+- I presented the limitations of the entropy model and explained the resource requirement for a neural network for more reliable results (with less false positives).
 
 <br> 
 
@@ -165,7 +166,7 @@ Example of an entropy output for one school broken down by specific attendance c
 ::::{.columns}
 :::{.column width=51%}
 
-The adjusted model flagged schools for further analysis after ofsted visits, and raised significantly less false positives. Benefits:
+The adjusted model flagged schools for further analysis after ofsted visits, and raised fewer false positives. Benefits:
 
 - Less computationally expensive
 - More interpretable results
