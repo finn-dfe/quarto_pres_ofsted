@@ -232,14 +232,20 @@ Finn Trinci
 <section id="starting-off" class="slide level2">
 <h2>Starting off</h2>
 <ul>
-<li>Understanding the daily attendance data model</li>
-<li><strong>Exploratory data analysis</strong>
+<li><p>Understanding the daily attendance data model</p></li>
+<li><p><strong>Exploratory data analysis</strong></p>
 <ul>
-<li>Small number of schools with all pupil characteristics unknown e.g.&nbsp;SEN.</li>
+<li>Small number of schools with all pupil characteristics unknown e.g.&nbsp;special educational needs (SEN).</li>
 </ul></li>
-<li>Data cleaning - large dataset so investigative</li>
+<li><p>Data cleaning - large dataset so investigative</p>
+<ul>
+<li>There were duplicate entries for the same pupils. Discussions with data modellers revealed that some schools created new learner IDs when a pupil changed year groups, so we took the most recent learner ID.</li>
+</ul></li>
 </ul>
-<p>There were duplicate entries for the same pupils. Discussions with data modellers revealed that some schools created new learner IDs when a pupil changed year groups, so we took the most recent learner ID.</p>
+<div class="columns">
+<div class="column" style="width:7%;">
+
+</div><div class="column" style="width:92%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href=""></a><span class="kw">create</span> <span class="kw">or</span> <span class="kw">replace</span> <span class="kw">temporary</span> <span class="kw">view</span> df_year_groups_deduped <span class="kw">as</span></span>
 <span id="cb1-2"><a href=""></a><span class="kw">select</span> a.<span class="op">*</span></span>
@@ -249,20 +255,22 @@ Finn Trinci
 <span id="cb1-6"><a href=""></a>) <span class="kw">as</span> a</span>
 <span id="cb1-7"><a href=""></a><span class="kw">where</span> a.rn <span class="op">=</span> <span class="dv">1</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div></div>
+<p><br></p>
 <ul>
 <li>Issues were communicated with the policy team so they could understand the data limitations early.</li>
 </ul>
 </section>
 <section id="methodology-entropy-analysis" class="slide level2">
-<h2>Methodology: Entropy Analysis</h2>
+<h2>Methodology: Entropy analysis</h2>
 <p>Entropy measures the likelihood of certain attendance codes occurring on a given day, with <strong>less likely</strong> codes having <strong>higher entropy</strong>.</p>
 <p><br></p>
 <p>Calculated as Shannon’s entropy:</p>
 <p><span class="math display">\[\begin{gather*}
-H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
+H(X_{j,t}) = -\sum_{i = 0}^Np(x_{k, j, t})\log_2p(x_{k, j, t})
 \end{gather*}\]</span></p>
-<p>Total entropy in school <span class="math inline">\(j\)</span> for session <span class="math inline">\(t\)</span> is equal to the sum for all <strong><span class="math inline">\(n\)</span> pupils</strong> of the pupil’s probability of having attendance code <span class="math inline">\(x_{i,j,t}\)</span> times by the log of that probability.</p>
-<p>How do we calculate the probability of each code?</p>
+<p>Total entropy in school <span class="math inline">\(j\)</span> for session <span class="math inline">\(t\)</span> is equal to the sum for all <strong><span class="math inline">\(N\)</span> pupils</strong> of the pupil’s probability of having attendance code <span class="math inline">\(x_{k,j,t}\)</span> times by the log of that probability.</p>
+<h4 id="how-do-we-calculate-the-probability-of-each-code">How do we calculate the probability of each code?</h4>
 <ul>
 <li><p>Code probabilities are modeled as a <strong>Dirichlet distributed</strong> random variable such that probabilities sum to 1 on any given session.</p></li>
 <li><p>Probabilities are estimated using <strong>Bayesian updating</strong> on a <strong>pupil level</strong>, so a pupil’s most common code has the highest probability.</p>
@@ -273,7 +281,7 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 </ul>
 </section>
 <section id="methodology-entropy-analysis-1" class="slide level2">
-<h2>Methodology: Entropy Analysis</h2>
+<h2>Methodology: Entropy analysis</h2>
 <div class="columns">
 <div class="column" style="width:69%;">
 <p>Drawbacks of this methodology:</p>
@@ -296,8 +304,8 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 <span id="cb2-5"><a href=""></a>  <span class="at">code_breakdown =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div>
 </section>
-<section id="entropy-methodology" class="slide level2">
-<h2>Entropy Methodology</h2>
+<section id="methodology-entropy-analysis-2" class="slide level2">
+<h2>Methodology: Entropy analysis</h2>
 <div class="columns">
 <div class="column" style="width:42%;">
 <p>Example of an entropy output for one school broken down by specific attendance codes.</p>
@@ -313,17 +321,22 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 </div></div>
 </section>
 <section id="new-methodology" class="slide level2">
-<h2>New Methodology:</h2>
+<h2>New Methodology!</h2>
 <ul>
-<li>Presented the limitations of the entropy model and explained the additional resource requirement to get more reliable results with less false positives.</li>
+<li>I presented the limitations of the entropy model and explained the resource requirement for a neural network as well as why it generates more reliable results (with less false positives).</li>
 </ul>
 <p><br></p>
 <ul>
-<li>Proposed an <strong>alternative methodology</strong> based on their initial requirements.
+<li>I proposed an <strong>alternative methodology</strong> based on their initial requirements.</li>
+</ul>
+<p><br></p>
+<h4 id="detecting-suspicious-activity-on-specific-days">Detecting suspicious activity on specific days</h4>
 <ul>
-<li>Looks at attendnace on <strong>specific days</strong> instead of every day for every school.</li>
-<li>This means in their Ofsted example, we can look at attendance on the Ofsted inspection date.</li>
-<li>The model is simplified to look at attendance and absence of specific pupil groups.</li>
+<li>Looks at attendance on <strong>specific days</strong> for each school instead of every day for every school.</li>
+<li>In line with the initial project requirements, we can look at attendance on the Ofsted inspection date.</li>
+<li>The model is simplified to look at attendance and absence of specific pupil groups.
+<ul>
+<li>But… it’s less flexible, it is an event study framework so looks at one output at a time. In the Ofsted example, we look at the attendance of previously excluded pupils and pupils with SEN.</li>
 </ul></li>
 </ul>
 </section>
@@ -336,10 +349,13 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 <li>Less computationally expensive</li>
 <li>More interpretable results</li>
 <li>Relevant to the current policy climate (this was during the time when Ofsted visits were being reformed)</li>
-<li>Code was flexible and reproducible so could be applied in other contexts e.g.&nbsp;looking at attendance on census days.</li>
+<li>Code was flexible and reproducible so could be applied in other contexts e.g.&nbsp;looking at attendance on census days.
+<ul>
+<li>Created detailed documentation to ensure future analysts could apply the pipeline with updated data, or to look at different dates.</li>
+</ul></li>
 </ul>
 </div><div class="column" style="width:48%;">
-<p><img data-src="images/m2_school_ofsted_dip.jpg"></p>
+<p><img data-src="images/m2_school_ofsted_dip.jpg" style="margin-bottom: 15px;"></p>
 </div></div>
 </section>
 <section id="lessons-learned" class="slide level2">
@@ -354,7 +370,7 @@ H(X_{j,t}) = -\sum_{i = 0}^np(x_{i, j, t})\log_2p(x_{i, j, t})
 <ul>
 <li>Noting users’ requirements early is crucial, it made presenting a new methodology possible.
 <ul>
-<li>Similarly, identifying a minimally viable product is important in case of future road blocks.</li>
+<li>Similarly, identifying a minimally viable product is important in case of project road blocks.</li>
 </ul></li>
 </ul>
 <p><br></p>
