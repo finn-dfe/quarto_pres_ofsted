@@ -22,13 +22,11 @@ execute:
 
 ## Project Initiation:
 
-**Data experts** - daily attendance data modelers.
-
-- Description of the data model and its features such as retrospective data updates.
-
 **Policy customers** - school accountability.
 
 - Wanted a model to flag suspicious attendance data activity to identify, for example, whether a school had an unusual attendance pattern on an Ofsted visit day. 
+
+<br>
 
 ### Tools used:
 
@@ -39,7 +37,8 @@ execute:
 
 ## Starting off
 
-- Understanding the daily attendance data model
+- **Data experts** - daily attendance data modelers.
+  - Description of the data model and its features such as retrospective data updates.
 - **Exploratory data analysis** 
   - Small number of schools with all pupil characteristics unknown e.g. special educational needs (SEN).
 - Data cleaning - large dataset so investigative
